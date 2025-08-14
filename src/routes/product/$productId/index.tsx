@@ -315,21 +315,92 @@ function ProductActions({ product }: ProductActionsProps) {
   );
 }
 
+type ReviewSortType = 'latest' | 'rating';
+
 type ProductReviewsProps = Pick<ProductDetailsProps, 'product'>;
 
 function ProductReviews({ product }: ProductReviewsProps) {
+  const [sortType, setSortType] = useState<ReviewSortType>('latest');
+
   if (!product.reviews || product.reviews.length === 0) {
     return null;
   }
 
+  const sortedReviews = [...product.reviews].sort((a, b) => {
+    if (sortType === 'latest') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    } else {
+      return b.rating - a.rating;
+    }
+  });
+
   return (
     <div className='mt-12'>
-      <h2 className='text-2xl font-bold text-gray-900 mb-6'>고객 리뷰</h2>
-      <div className='space-y-6'>
-        {product.reviews.map((review, index) => (
-          <ProductReviewCard key={index} review={review} />
-        ))}
+      <ProductReviewsHeader
+        sortType={sortType}
+        onSortChange={setSortType}
+        reviewCount={product.reviews.length}
+      />
+      <ProductReviewsList reviews={sortedReviews} />
+    </div>
+  );
+}
+
+type ProductReviewsHeaderProps = {
+  sortType: ReviewSortType;
+  onSortChange: (sortType: ReviewSortType) => void;
+  reviewCount: number;
+};
+
+function ProductReviewsHeader({
+  sortType,
+  onSortChange,
+  reviewCount,
+}: ProductReviewsHeaderProps) {
+  return (
+    <div className='flex items-center justify-between mb-6'>
+      <h2 className='text-2xl font-bold text-gray-900'>
+        고객 리뷰 ({reviewCount}개)
+      </h2>
+      <div className='flex gap-2'>
+        <button
+          onClick={() => onSortChange('latest')}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            sortType === 'latest'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          최신순
+        </button>
+        <button
+          onClick={() => onSortChange('rating')}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            sortType === 'rating'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          평점순
+        </button>
       </div>
+    </div>
+  );
+}
+
+type ProductReviewsListProps = {
+  reviews: Product['reviews'];
+};
+
+function ProductReviewsList({ reviews }: ProductReviewsListProps) {
+  return (
+    <div className='space-y-6'>
+      {reviews.map((review, index) => (
+        <ProductReviewCard
+          key={`${review.reviewerEmail}-${index}`}
+          review={review}
+        />
+      ))}
     </div>
   );
 }
