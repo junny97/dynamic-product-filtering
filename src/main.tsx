@@ -6,8 +6,13 @@ import { routeTree } from './routeTree.gen';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+// Create a new router instance with context for loaders/actions
+const queryClient = new QueryClient();
+
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -15,8 +20,6 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
-
-const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
