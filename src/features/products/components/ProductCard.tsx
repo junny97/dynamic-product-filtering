@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { calculateDiscountedPrice } from '../../../utils/utliFn';
 import type { Product } from '../products.type';
 
@@ -13,7 +14,11 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = product.discountPercentage > 0;
 
   return (
-    <div className='rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+    <Link
+      to='/product/$productId'
+      params={{ productId: product.id }}
+      className='block rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden hover:shadow-md transition-shadow'
+    >
       <div className='relative p-4'>
         <div className='absolute left-3 top-3'>
           <span className='inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 capitalize'>
@@ -62,6 +67,6 @@ export function ProductCard({ product }: ProductCardProps) {
           <span>Stock: {product.stock}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -1,9 +1,15 @@
 import {
   infiniteQueryOptions,
+  queryOptions,
+  useQuery,
   useSuspenseInfiniteQuery,
 } from '@tanstack/react-query';
-import { fetchProducts } from './products.api';
-import type { GetProductsParams, ProductListResponse } from './products.type';
+import { fetchProductById, fetchProducts } from './products.api';
+import type {
+  GetProductsParams,
+  Product,
+  ProductListResponse,
+} from './products.type';
 
 export type ProductsInfiniteParams = Pick<GetProductsParams, 'limit'>;
 
@@ -28,4 +34,15 @@ export function useProductsSuspenseInfiniteQuery(
   params: ProductsInfiniteParams
 ) {
   return useSuspenseInfiniteQuery(createProductsInfiniteQueryOptions(params));
+}
+
+export function createProductByIdQueryOptions(productId: number) {
+  return queryOptions<Product>({
+    queryKey: ['product', productId],
+    queryFn: () => fetchProductById(productId),
+  });
+}
+
+export function useProductByIdQuery(productId: number) {
+  return useQuery(createProductByIdQueryOptions(productId));
 }
