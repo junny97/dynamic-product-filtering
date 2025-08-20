@@ -11,6 +11,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { useCartStore } from '../../../features/products/product.store';
 import { toast } from 'sonner';
+import { useShallow } from 'zustand/react/shallow';
 
 type ReviewSortType = 'latest' | 'rating';
 
@@ -47,9 +48,13 @@ type ProductDetailsProps = {
 function ProductDetails() {
   const { productId } = Route.useParams();
   const { data: product } = useProductByIdQuery(productId);
-  const addToCart = useCartStore((state) => state.addToCart);
-  const isInCart = useCartStore((state) => state.isInCart);
-  const getCartQuantity = useCartStore((state) => state.getCartQuantity);
+  const { addToCart, isInCart, getCartQuantity } = useCartStore(
+    useShallow((state) => ({
+      addToCart: state.addToCart,
+      isInCart: state.isInCart,
+      getCartQuantity: state.getCartQuantity,
+    }))
+  );
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
