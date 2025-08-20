@@ -5,6 +5,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from 'sonner';
 
 // Create a new router instance with context for loaders/actions
 const queryClient = new QueryClient();
@@ -31,5 +32,6 @@ createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
     <ReactQueryDevtools initialIsOpen={false} />
     <RouterProvider router={router} />
+    <Toaster position='top-center' richColors />
   </QueryClientProvider>
 );

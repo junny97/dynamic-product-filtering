@@ -7,6 +7,12 @@ import {
 } from '../../../features/products/use-products.query';
 import { calculateDiscountedPrice } from '../../../utils/utliFn';
 import type { Product } from '../../../features/products/products.type';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { useCartStore } from '../../../features/products/product.store';
+import { toast } from 'sonner';
+
+type ReviewSortType = 'latest' | 'rating';
 
 export const Route = createFileRoute('/product/$productId/')({
   params: {
@@ -41,19 +47,87 @@ type ProductDetailsProps = {
 function ProductDetails() {
   const { productId } = Route.useParams();
   const { data: product } = useProductByIdQuery(productId);
+  const addToCart = useCartStore((state) => state.addToCart);
+  const isInCart = useCartStore((state) => state.isInCart);
+  const getCartQuantity = useCartStore((state) => state.getCartQuantity);
+
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [reviewSortType, setReviewSortType] =
+    useState<ReviewSortType>('latest');
 
   if (!product) {
     return <div>Loading...</div>;
   }
 
+  const handleImageSelect = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+
+  const handleQuantityIncrease = () => {
+    setQuantity((prev) => {
+      if (prev < product.stock) {
+        return prev + 1;
+      }
+      return prev;
+    });
+  };
+
+  const handleQuantityDecrease = () => {
+    setQuantity((prev) => {
+      if (prev > 1) {
+        return prev - 1;
+      }
+      return prev;
+    });
+  };
+
+  const handleQuantityChange = (value: string) => {
+    const numValue = parseInt(value);
+    if (isNaN(numValue) || numValue < 1) {
+      setQuantity(1);
+    } else if (numValue > product.stock) {
+      setQuantity(product.stock);
+    } else {
+      setQuantity(numValue);
+    }
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    toast.success(`${product.title}을 ${quantity}개 장바구니에 추가했습니다.`);
+    setQuantity(1);
+  };
+
+  const handleReviewSortChange = (sortType: ReviewSortType) => {
+    setReviewSortType(sortType);
+  };
+
   return (
     <div className='max-w-7xl mx-auto p-4'>
       <ProductDetailHeader />
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-        <ProductImageGallery product={product} />
-        <ProductInfo product={product} />
+        <ProductImageGallery
+          product={product}
+          selectedImageIndex={selectedImageIndex}
+          onImageSelect={handleImageSelect}
+        />
+        <ProductInfo
+          product={product}
+          quantity={quantity}
+          onQuantityIncrease={handleQuantityIncrease}
+          onQuantityDecrease={handleQuantityDecrease}
+          onQuantityChange={handleQuantityChange}
+          onAddToCart={handleAddToCart}
+          isInCart={isInCart(product.id)}
+          cartQuantity={getCartQuantity(product.id)}
+        />
       </div>
-      <ProductReviews product={product} />
+      <ProductReviews
+        product={product}
+        sortType={reviewSortType}
+        onSortChange={handleReviewSortChange}
+      />
     </div>
   );
 }
@@ -84,11 +158,16 @@ function ProductDetailHeader() {
   );
 }
 
-type ProductImageGalleryProps = Pick<ProductDetailsProps, 'product'>;
+type ProductImageGalleryProps = Pick<ProductDetailsProps, 'product'> & {
+  selectedImageIndex: number;
+  onImageSelect: (index: number) => void;
+};
 
-function ProductImageGallery({ product }: ProductImageGalleryProps) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-
+function ProductImageGallery({
+  product,
+  selectedImageIndex,
+  onImageSelect,
+}: ProductImageGalleryProps) {
   return (
     <div className='space-y-4'>
       <ProductMainImage
@@ -98,7 +177,7 @@ function ProductImageGallery({ product }: ProductImageGalleryProps) {
       <ProductThumbnails
         product={product}
         selectedImageIndex={selectedImageIndex}
-        onImageSelect={setSelectedImageIndex}
+        onImageSelect={onImageSelect}
       />
     </div>
   );
@@ -160,9 +239,26 @@ function ProductThumbnails({
   );
 }
 
-type ProductInfoProps = Pick<ProductDetailsProps, 'product'>;
+type ProductInfoProps = Pick<ProductDetailsProps, 'product'> & {
+  quantity: number;
+  onQuantityIncrease: () => void;
+  onQuantityDecrease: () => void;
+  onQuantityChange: (value: string) => void;
+  onAddToCart: () => void;
+  isInCart: boolean;
+  cartQuantity: number;
+};
 
-function ProductInfo({ product }: ProductInfoProps) {
+function ProductInfo({
+  product,
+  quantity,
+  onQuantityIncrease,
+  onQuantityDecrease,
+  onQuantityChange,
+  onAddToCart,
+  isInCart,
+  cartQuantity,
+}: ProductInfoProps) {
   return (
     <div className='space-y-6'>
       <ProductBasicInfo product={product} />
@@ -170,7 +266,16 @@ function ProductInfo({ product }: ProductInfoProps) {
       <ProductStock product={product} />
       <ProductDescription product={product} />
       <ProductMeta product={product} />
-      <ProductActions product={product} />
+      <ProductActions
+        product={product}
+        quantity={quantity}
+        onQuantityIncrease={onQuantityIncrease}
+        onQuantityDecrease={onQuantityDecrease}
+        onQuantityChange={onQuantityChange}
+        onAddToCart={onAddToCart}
+        isInCart={isInCart}
+        cartQuantity={cartQuantity}
+      />
     </div>
   );
 }
@@ -302,26 +407,116 @@ function ProductMeta({ product }: ProductMetaProps) {
   );
 }
 
-type ProductActionsProps = Pick<ProductDetailsProps, 'product'>;
+type ProductActionsProps = Pick<ProductDetailsProps, 'product'> & {
+  quantity: number;
+  onQuantityIncrease: () => void;
+  onQuantityDecrease: () => void;
+  onQuantityChange: (value: string) => void;
+  onAddToCart: () => void;
+  isInCart: boolean;
+  cartQuantity: number;
+};
 
-function ProductActions({ product }: ProductActionsProps) {
+function ProductActions({
+  product,
+  quantity,
+  onQuantityIncrease,
+  onQuantityDecrease,
+  onQuantityChange,
+  onAddToCart,
+  isInCart,
+  cartQuantity,
+}: ProductActionsProps) {
+  const isAddToCartDisabled = product.stock === 0 || quantity <= 0;
+
   return (
-    <button
-      className='w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed'
-      disabled={product.stock === 0}
-    >
-      {product.stock === 0 ? '품절' : '장바구니에 추가'}
-    </button>
+    <div className='space-y-4'>
+      {/* 장바구니 상태 표시 */}
+      {isInCart && (
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-3'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <svg
+                className='w-5 h-5 text-blue-600'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M5 13l4 4L19 7'
+                />
+              </svg>
+              <span className='text-sm font-medium text-blue-800'>
+                이미 장바구니에 있는 상품입니다
+              </span>
+            </div>
+            <span className='text-sm text-blue-600'>현재 {cartQuantity}개</span>
+          </div>
+        </div>
+      )}
+
+      <div className='flex items-center gap-3'>
+        <label className='text-sm font-medium text-gray-700'>수량:</label>
+        <div className='flex items-center border border-gray-300 rounded-lg'>
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={onQuantityDecrease}
+            disabled={quantity <= 1}
+            className='h-9 w-9 p-0 rounded-none border-r border-gray-300'
+          >
+            -
+          </Button>
+          <Input
+            type='number'
+            value={quantity}
+            onChange={(e) => onQuantityChange(e.target.value)}
+            min={1}
+            max={product.stock}
+            className='h-9 w-16 text-center border-0 rounded-none focus-visible:ring-0 focus-visible:border-0'
+          />
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={onQuantityIncrease}
+            disabled={quantity >= product.stock}
+            className='h-9 w-9 p-0 rounded-none border-l border-gray-300'
+          >
+            +
+          </Button>
+        </div>
+        <span className='text-sm text-gray-500'>(최대 {product.stock}개)</span>
+      </div>
+
+      <Button
+        className='w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300'
+        size='lg'
+        disabled={isAddToCartDisabled}
+        onClick={onAddToCart}
+      >
+        {product.stock === 0
+          ? '품절'
+          : isInCart
+            ? '장바구니에 더 추가'
+            : '장바구니에 추가'}
+      </Button>
+    </div>
   );
 }
 
-type ReviewSortType = 'latest' | 'rating';
+type ProductReviewsProps = Pick<ProductDetailsProps, 'product'> & {
+  sortType: ReviewSortType;
+  onSortChange: (sortType: ReviewSortType) => void;
+};
 
-type ProductReviewsProps = Pick<ProductDetailsProps, 'product'>;
-
-function ProductReviews({ product }: ProductReviewsProps) {
-  const [sortType, setSortType] = useState<ReviewSortType>('latest');
-
+function ProductReviews({
+  product,
+  sortType,
+  onSortChange,
+}: ProductReviewsProps) {
   if (!product.reviews || product.reviews.length === 0) {
     return null;
   }
@@ -338,7 +533,7 @@ function ProductReviews({ product }: ProductReviewsProps) {
     <div className='mt-12'>
       <ProductReviewsHeader
         sortType={sortType}
-        onSortChange={setSortType}
+        onSortChange={onSortChange}
         reviewCount={product.reviews.length}
       />
       <ProductReviewsList reviews={sortedReviews} />
