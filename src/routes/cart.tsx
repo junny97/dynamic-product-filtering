@@ -325,7 +325,7 @@ type CartSummaryProps = {
 };
 
 function CartSummary({ totalPrice }: CartSummaryProps) {
-  const shippingFee = totalPrice > 50 ? 0 : 5.99; // $50 이상 무료배송
+  const shippingFee = totalPrice > 30 ? 0 : 5.99; // $30 이상 무료배송
   const finalTotal = totalPrice + shippingFee;
 
   return (
@@ -349,9 +349,9 @@ function CartSummary({ totalPrice }: CartSummaryProps) {
           </span>
         </div>
 
-        {totalPrice < 50 && (
+        {totalPrice < 30 && (
           <div className='text-sm text-gray-500 bg-blue-50 p-3 rounded-lg'>
-            ${(50 - totalPrice).toFixed(2)} 더 주문하시면 무료배송!
+            ${(30 - totalPrice).toFixed(2)} 더 주문하시면 무료배송!
           </div>
         )}
 

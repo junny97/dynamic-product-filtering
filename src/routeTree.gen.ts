@@ -9,24 +9,42 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PopularRouteImport } from './routes/popular'
+import { Route as HotDealsRouteImport } from './routes/hot-deals'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategoryIndexRouteImport } from './routes/category/index'
+import { Route as CategoryCategoryNameRouteImport } from './routes/category/$categoryName'
 import { Route as ProductProductIdIndexRouteImport } from './routes/product/$productId/index'
 
+const PopularRoute = PopularRouteImport.update({
+  id: '/popular',
+  path: '/popular',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotDealsRoute = HotDealsRouteImport.update({
+  id: '/hot-deals',
+  path: '/hot-deals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryIndexRoute = CategoryIndexRouteImport.update({
+  id: '/category/',
+  path: '/category/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryCategoryNameRoute = CategoryCategoryNameRouteImport.update({
+  id: '/category/$categoryName',
+  path: '/category/$categoryName',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductProductIdIndexRoute = ProductProductIdIndexRouteImport.update({
@@ -37,40 +55,88 @@ const ProductProductIdIndexRoute = ProductProductIdIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/cart': typeof CartRoute
+  '/hot-deals': typeof HotDealsRoute
+  '/popular': typeof PopularRoute
+  '/category/$categoryName': typeof CategoryCategoryNameRoute
+  '/category': typeof CategoryIndexRoute
   '/product/$productId': typeof ProductProductIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/cart': typeof CartRoute
+  '/hot-deals': typeof HotDealsRoute
+  '/popular': typeof PopularRoute
+  '/category/$categoryName': typeof CategoryCategoryNameRoute
+  '/category': typeof CategoryIndexRoute
   '/product/$productId': typeof ProductProductIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/cart': typeof CartRoute
+  '/hot-deals': typeof HotDealsRoute
+  '/popular': typeof PopularRoute
+  '/category/$categoryName': typeof CategoryCategoryNameRoute
+  '/category/': typeof CategoryIndexRoute
   '/product/$productId/': typeof ProductProductIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/cart' | '/product/$productId'
+  fullPaths:
+    | '/'
+    | '/cart'
+    | '/hot-deals'
+    | '/popular'
+    | '/category/$categoryName'
+    | '/category'
+    | '/product/$productId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/cart' | '/product/$productId'
-  id: '__root__' | '/' | '/about' | '/cart' | '/product/$productId/'
+  to:
+    | '/'
+    | '/cart'
+    | '/hot-deals'
+    | '/popular'
+    | '/category/$categoryName'
+    | '/category'
+    | '/product/$productId'
+  id:
+    | '__root__'
+    | '/'
+    | '/cart'
+    | '/hot-deals'
+    | '/popular'
+    | '/category/$categoryName'
+    | '/category/'
+    | '/product/$productId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   CartRoute: typeof CartRoute
+  HotDealsRoute: typeof HotDealsRoute
+  PopularRoute: typeof PopularRoute
+  CategoryCategoryNameRoute: typeof CategoryCategoryNameRoute
+  CategoryIndexRoute: typeof CategoryIndexRoute
   ProductProductIdIndexRoute: typeof ProductProductIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/popular': {
+      id: '/popular'
+      path: '/popular'
+      fullPath: '/popular'
+      preLoaderRoute: typeof PopularRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hot-deals': {
+      id: '/hot-deals'
+      path: '/hot-deals'
+      fullPath: '/hot-deals'
+      preLoaderRoute: typeof HotDealsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -78,18 +144,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/': {
+      id: '/category/'
+      path: '/category'
+      fullPath: '/category'
+      preLoaderRoute: typeof CategoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$categoryName': {
+      id: '/category/$categoryName'
+      path: '/category/$categoryName'
+      fullPath: '/category/$categoryName'
+      preLoaderRoute: typeof CategoryCategoryNameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/$productId/': {
@@ -104,8 +177,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   CartRoute: CartRoute,
+  HotDealsRoute: HotDealsRoute,
+  PopularRoute: PopularRoute,
+  CategoryCategoryNameRoute: CategoryCategoryNameRoute,
+  CategoryIndexRoute: CategoryIndexRoute,
   ProductProductIdIndexRoute: ProductProductIdIndexRoute,
 }
 export const routeTree = rootRouteImport

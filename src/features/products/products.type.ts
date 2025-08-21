@@ -54,4 +54,7 @@ export type ProductListResponse = {
 export type GetProductsParams = {
   limit: number;
   skip: number;
+  category?: string;
 };
+
+export type Category = string;
