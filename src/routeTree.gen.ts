@@ -9,24 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PopularRouteImport } from './routes/popular'
-import { Route as HotDealsRouteImport } from './routes/hot-deals'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PopularIndexRouteImport } from './routes/popular/index'
+import { Route as HotdealIndexRouteImport } from './routes/hotdeal/index'
 import { Route as CategoryIndexRouteImport } from './routes/category/index'
 import { Route as CategoryCategoryNameRouteImport } from './routes/category/$categoryName'
 import { Route as ProductProductIdIndexRouteImport } from './routes/product/$productId/index'
 
-const PopularRoute = PopularRouteImport.update({
-  id: '/popular',
-  path: '/popular',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HotDealsRoute = HotDealsRouteImport.update({
-  id: '/hot-deals',
-  path: '/hot-deals',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -35,6 +25,16 @@ const CartRoute = CartRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PopularIndexRoute = PopularIndexRouteImport.update({
+  id: '/popular/',
+  path: '/popular/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotdealIndexRoute = HotdealIndexRouteImport.update({
+  id: '/hotdeal/',
+  path: '/hotdeal/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoryIndexRoute = CategoryIndexRouteImport.update({
@@ -56,29 +56,29 @@ const ProductProductIdIndexRoute = ProductProductIdIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/hot-deals': typeof HotDealsRoute
-  '/popular': typeof PopularRoute
   '/category/$categoryName': typeof CategoryCategoryNameRoute
   '/category': typeof CategoryIndexRoute
+  '/hotdeal': typeof HotdealIndexRoute
+  '/popular': typeof PopularIndexRoute
   '/product/$productId': typeof ProductProductIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/hot-deals': typeof HotDealsRoute
-  '/popular': typeof PopularRoute
   '/category/$categoryName': typeof CategoryCategoryNameRoute
   '/category': typeof CategoryIndexRoute
+  '/hotdeal': typeof HotdealIndexRoute
+  '/popular': typeof PopularIndexRoute
   '/product/$productId': typeof ProductProductIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
-  '/hot-deals': typeof HotDealsRoute
-  '/popular': typeof PopularRoute
   '/category/$categoryName': typeof CategoryCategoryNameRoute
   '/category/': typeof CategoryIndexRoute
+  '/hotdeal/': typeof HotdealIndexRoute
+  '/popular/': typeof PopularIndexRoute
   '/product/$productId/': typeof ProductProductIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -86,57 +86,43 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cart'
-    | '/hot-deals'
-    | '/popular'
     | '/category/$categoryName'
     | '/category'
+    | '/hotdeal'
+    | '/popular'
     | '/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cart'
-    | '/hot-deals'
-    | '/popular'
     | '/category/$categoryName'
     | '/category'
+    | '/hotdeal'
+    | '/popular'
     | '/product/$productId'
   id:
     | '__root__'
     | '/'
     | '/cart'
-    | '/hot-deals'
-    | '/popular'
     | '/category/$categoryName'
     | '/category/'
+    | '/hotdeal/'
+    | '/popular/'
     | '/product/$productId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CartRoute: typeof CartRoute
-  HotDealsRoute: typeof HotDealsRoute
-  PopularRoute: typeof PopularRoute
   CategoryCategoryNameRoute: typeof CategoryCategoryNameRoute
   CategoryIndexRoute: typeof CategoryIndexRoute
+  HotdealIndexRoute: typeof HotdealIndexRoute
+  PopularIndexRoute: typeof PopularIndexRoute
   ProductProductIdIndexRoute: typeof ProductProductIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/popular': {
-      id: '/popular'
-      path: '/popular'
-      fullPath: '/popular'
-      preLoaderRoute: typeof PopularRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hot-deals': {
-      id: '/hot-deals'
-      path: '/hot-deals'
-      fullPath: '/hot-deals'
-      preLoaderRoute: typeof HotDealsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -149,6 +135,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/popular/': {
+      id: '/popular/'
+      path: '/popular'
+      fullPath: '/popular'
+      preLoaderRoute: typeof PopularIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hotdeal/': {
+      id: '/hotdeal/'
+      path: '/hotdeal'
+      fullPath: '/hotdeal'
+      preLoaderRoute: typeof HotdealIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/category/': {
@@ -178,10 +178,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
-  HotDealsRoute: HotDealsRoute,
-  PopularRoute: PopularRoute,
   CategoryCategoryNameRoute: CategoryCategoryNameRoute,
   CategoryIndexRoute: CategoryIndexRoute,
+  HotdealIndexRoute: HotdealIndexRoute,
+  PopularIndexRoute: PopularIndexRoute,
   ProductProductIdIndexRoute: ProductProductIdIndexRoute,
 }
 export const routeTree = rootRouteImport

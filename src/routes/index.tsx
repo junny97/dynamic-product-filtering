@@ -28,7 +28,6 @@ function Index() {
   return (
     <div className='min-h-screen bg-gray-50'>
       <HeroSection />
-
       <section className='max-w-7xl mx-auto px-4 py-12'>
         <div className='flex items-center justify-between mb-8'>
           <h2 className='text-2xl font-bold text-gray-900'>전체 상품</h2>
@@ -68,7 +67,7 @@ function HeroSection() {
           다양한 카테고리의 상품들을 만나보세요
         </p>
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-          <Link to='/hot-deals'>
+          <Link to='/hotdeal'>
             <Button size='lg' variant='secondary'>
               🔥 오늘의 핫딜 제품
             </Button>
