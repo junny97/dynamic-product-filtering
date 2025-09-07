@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import type { CartItem } from '../features/products/product.store';
 import { useShallow } from 'zustand/react/shallow';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/cart')({
   component: CartPage,
@@ -97,6 +98,7 @@ function CartHeader({ totalItems, onClearCart }: CartHeaderProps) {
   const handleClearCart = () => {
     if (showClearConfirm) {
       onClearCart();
+      toast.success('장바구니를 전부 비웠습니다.');
       setShowClearConfirm(false);
     } else {
       setShowClearConfirm(true);

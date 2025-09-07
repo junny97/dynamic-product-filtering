@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Product } from './products.type';
 import { calculateDiscountedPrice } from '@/utils/utliFn';
-import { toast } from 'sonner';
 
 export type CartItem = {
   product: Product;
@@ -83,7 +82,7 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => {
         set({ items: [] });
-        toast.success('장바구니를 전부 비웠습니다.');
+        // toast.success('장바구니를 전부 비웠습니다.');
       },
 
       getTotalPrice: () => {
